@@ -74,4 +74,3 @@ for x = 1:length (fileList)
      writetable(shortTableSorted, newFilename,'Delimiter', '\t');  
 
 end
-end
