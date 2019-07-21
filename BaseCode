@@ -35,10 +35,10 @@ for x = 1:length (fileList)
      pth = dataArray{1}(idx,:);
      mat = dataArray{2}(idx,:);
      rgb = dataArray{3}(idx,:);
-
+%{
      % Compare rbg to string, 0=red, 1=blue
      ind2 = strcmp('java.awt.Color[r=0,g=0,b=255]',rgb);
-
+ %}
      % Selects all rows in columns 9 and 10
      xAll = mat (:,9);
      yAll = mat (:,10);
@@ -50,7 +50,7 @@ for x = 1:length (fileList)
      % Selects blue rows in columns 9 and 10
      xBlue = mat ([ind2==1],9);
      yBlue = mat ([ind2==1],10);
-
+%{
      % Plotting on the same graph
      hold on
      scatter (xRed,yRed, 'filled', 'r');
@@ -65,7 +65,7 @@ for x = 1:length (fileList)
 
      %Sorts data so that blue is over red
      shortTableSorted = sortrows(shortTable,3);
-
+ %}
      % write the processed data to a new file in the user selected folder
      % the new file will end with *_output.txt
      newFilename = fullfile(outputDirectory, fileList(x).name);
