@@ -26,19 +26,19 @@ for x = 1:length (fileList)
      filename = fullfile(fileList(x).folder, fileList(x).name);
      fprintf(1, 'Now reading %s\n', filename);
      fileID = fopen(filename,'r');
-     dataArray = textscan(fileID,'%s%f%f%f%f%f%f%f%f%f%f%f%f%s','Delimiter','\t','HeaderLines',1,'CollectOutput',true);
+     dataArray = textscan(fileID,'%s%s%s%s%s%s%s%s%s%s%s%s%s%s%f%f%s','Delimiter',',','HeaderLines',1,'CollectOutput',true);
      fclose(fileID);
      % fullTable = table(dataArray{1:end});
-
+%{
      % Remove NaN rows with ~all(Arrayname, 1 or 2), where ~ means not, and 1 works by columns, 2 works by rows
      idx = ~all(isnan(dataArray{2}),2);
      pth = dataArray{1}(idx,:);
      mat = dataArray{2}(idx,:);
      rgb = dataArray{3}(idx,:);
-%{
+
      % Compare rbg to string, 0=red, 1=blue
      ind2 = strcmp('java.awt.Color[r=0,g=0,b=255]',rgb);
- %}
+
      % Selects all rows in columns 9 and 10
      xAll = mat (:,9);
      yAll = mat (:,10);
@@ -50,7 +50,7 @@ for x = 1:length (fileList)
      % Selects blue rows in columns 9 and 10
      xBlue = mat ([ind2==1],9);
      yBlue = mat ([ind2==1],10);
-%{
+
      % Plotting on the same graph
      hold on
      scatter (xRed,yRed, 'filled', 'r');
@@ -65,12 +65,12 @@ for x = 1:length (fileList)
 
      %Sorts data so that blue is over red
      shortTableSorted = sortrows(shortTable,3);
- %}
+
      % write the processed data to a new file in the user selected folder
      % the new file will end with *_output.txt
      newFilename = fullfile(outputDirectory, fileList(x).name);
      [filepath,name,ext] = fileparts(newFilename);
      newFilename = fullfile(filepath, strcat(name,'_Output',ext));
      writetable(shortTableSorted, newFilename,'Delimiter', '\t');  
-
+ %}
 end
