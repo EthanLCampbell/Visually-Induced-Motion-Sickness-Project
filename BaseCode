@@ -1,4 +1,3 @@
-function test = ScriptFile(~,~) %#ok<STOUT>
 % This program reads and processes central field csv data files 
 % from a user-specified folder and saves corresponding output 
 % files to another user-specified folder.
