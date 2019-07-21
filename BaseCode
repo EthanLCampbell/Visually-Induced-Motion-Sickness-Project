@@ -1,4 +1,4 @@
-% This program reads and processes central field csv data files 
+>> % This program reads and processes central field csv data files 
 % from a user-specified folder and saves corresponding output 
 % files to another user-specified folder.
 % Author Ethan Labianca-Campbell
@@ -36,7 +36,10 @@ for x = 1:length (fileList)
      junk = dataArray{1}(idx,:);
      VIMS = dataArray{2}(idx,:);
      ISwait = dataArray{3}(idx,:);
-
+     
+     VIMSscale = VIMS(:,1);
+     VIMScount = VIMS(:,2);
+     
 %{    
      
 
