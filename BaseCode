@@ -28,12 +28,18 @@ for x = 1:length (fileList)
      fileID = fopen(filename,'r');
      dataArray = textscan(fileID,'%s%s%s%s%s%s%s%s%s%s%s%s%s%s%f%f%s','Delimiter',',','HeaderLines',1,'CollectOutput',true);
      fclose(fileID);
-
-     junk = dataArray{1}(dataArray,:);
-     VIMS= dataArray{2}(dataArray,:);
-     ISwait = dataArray{3}(dataArray,:);
      
-  %{   
+     % fullTable = table(dataArray{1:end});
+
+     % Remove NaN rows with ~all(Arrayname, 1 or 2), where ~ means not, and 1 works by columns, 2 works by rows
+     idx = ~all(isnan(dataArray{2}),2);
+     junk = dataArray{1}(idx,:);
+     VIMS = dataArray{2}(idx,:);
+     ISwait = dataArray{3}(idx,:);
+
+%{    
+     
+
      % Compare rbg to string, 0=red, 1=blue
      ind2 = strcmp('java.awt.Color[r=0,g=0,b=255]',rgb);
 
