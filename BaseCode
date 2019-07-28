@@ -1,4 +1,4 @@
->> % This program reads and processes VIMS oculus files 
+% This program reads and processes VIMS oculus files 
 % from a user-specified folder and saves corresponding output 
 % files to another user-specified folder.
 % Author Ethan Labianca-Campbell
@@ -18,7 +18,7 @@ outputDirectory = uigetdir('C:\', 'Select a folder for the output data.');
 
 % Dir lists only *.txt files in the selected directory in a structured array
 % Fullfile returns a vector with information about each file (name, folder, date, etc)
-fileList = dir(fullfile(inputDirectory, '*.txt'));
+fileList = dir(fullfile(inputDirectory, '*.csv'));
 
 % Now that you have a list of file names and folder paths, you can process each one.
 for x = 1:length (fileList)
@@ -26,7 +26,7 @@ for x = 1:length (fileList)
      filename = fullfile(fileList(x).folder, fileList(x).name);
      fprintf(1, 'Now reading %s\n', filename);
      fileID = fopen(filename,'r');
-     dataArray = textscan(fileID,'%s%s%s%s%s%s%s%s%s%s%s%s%s%s%f%f%s','Delimiter',',','HeaderLines',1,'CollectOutput',true);
+     dataArray = textscan(fileID,'%s%s%s%s%s%s%s%s%s%s%s%s%s%f%f%f%s','Delimiter',',','HeaderLines',1,'CollectOutput',true);
      fclose(fileID);
      
      % fullTable = table(dataArray{1:end});
@@ -34,12 +34,29 @@ for x = 1:length (fileList)
      % Remove NaN rows with ~all(Arrayname, 1 or 2), where ~ means not, and 1 works by columns, 2 works by rows
      idx = ~all(isnan(dataArray{2}),2);
      junk = dataArray{1}(idx,:);
-     VIMS = dataArray{2}(idx,:);
-     ISwait = dataArray{3}(idx,:);
-     
-     % VIMS table divided into separated columns 
-     VIMSscale = VIMS(:,1);
-     VIMScount = VIMS(:,2);
-     
+     TIMEandVIMS = dataArray{2}(idx,:);
+     %ISwait = dataArray{3}(idx,:);
+ 
+     %combined TIMEandVIMS and ISwait into a structured array called "UsefulData"
+     %structuredArray.TIMEandVIMS  = TIMEandVIMS (:,:);
+     %structuredArray.ISwait  = ISwait (:,:);
+     %UsefulData = struct2table(structuredArray)
+	
+     %looping through UsefulData to get one data point every 30 seconds/(91st row)
+     DataEvery30s = TIMEandVIMS(1:91:end,:);
 
+     %separates dependant/independant variables for graphing
+     TIMEEvery30s =  DataEvery30s(:,1);
+     VIMSEvery30s =  DataEvery30s(:,2);
+	
+     %plots data and adjusts axes
+     hold on
+     plot(TIMEEvery30s ,VIMSEvery30s);
+     scatter(TIMEEvery30s ,VIMSEvery30s,'filled', 'b');
+     ylim([0 4])
+     yticks([0 1 2 3 4])
+     xticks([30 60 90 120 150 180 210 240 270 300 330 360])
+     xlabel("Time (Seconds)")
+     ylabel("VIMS rating")
+     title("Temporal VIMS rating")
 end
