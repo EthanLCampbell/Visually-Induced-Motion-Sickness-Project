@@ -26,33 +26,50 @@ for x = 1:length (fileList)
      filename = fullfile(fileList(x).folder, fileList(x).name);
      fprintf(1, 'Now reading %s\n', filename);
      fileID = fopen(filename,'r');
-     dataArray = textscan(fileID,'%s%s%s%s%s%s%s%s%s%s%s%s%s%f%f%f%s','Delimiter',',','HeaderLines',1,'CollectOutput',true);
+     dataArray = textscan(fileID,'%s%s%s%s%s%s%s%s%s%s%s%s%s%f%f%f%s','Delimiter',',','HeaderLines',1,'CollectOutput',false);
      fclose(fileID);
+
+     %create table from file
+     fullTable = table(dataArray{1:end});
      
-     % fullTable = table(dataArray{1:end});
+     %create and index based on ISwait = False. Will delete Trues
+     idx = (fullTable.Var17=="False");
 
-     % Remove NaN rows with ~all(Arrayname, 1 or 2), where ~ means not, and 1 works by columns, 2 works by rows
-     idx = ~all(isnan(dataArray{2}),2);
-     junk = dataArray{1}(idx,:);
-     TIMEandVIMS = dataArray{2}(idx,:);
-     %ISwait = dataArray{3}(idx,:);
- 
-     %combined TIMEandVIMS and ISwait into a structured array called "UsefulData"
-     %structuredArray.TIMEandVIMS  = TIMEandVIMS (:,:);
-     %structuredArray.ISwait  = ISwait (:,:);
-     %UsefulData = struct2table(structuredArray)
-	
-     %looping through UsefulData to get one data point every 30 seconds/(91st row)
-     DataEvery30s = TIMEandVIMS(1:91:end,:);
+     %deletes Trues
+     dataArrayNoTrues = fullTable(idx,:);
 
-     %separates dependant/independant variables for graphing
-     TIMEEvery30s =  DataEvery30s(:,1);
-     VIMSEvery30s =  DataEvery30s(:,2);
-	
+     %created 2 new variables based on ClickCounts and Time
+     Var18 = dataArrayNoTrues.Var16; 
+     Var19 = dataArrayNoTrues.Var14;
+
+     %adding the two new variables to the table
+     dataArrayNoTruesWithMore = addvars(dataArrayNoTrues,Var18,Var19);
+
+     %index for before and after True
+     idxBeforeTrue = all((diff([dataArrayNoTruesWithMore.Var16; 0]) > 0),2);
+     idxAfterTrue = all((diff([0; dataArrayNoTruesWithMore.Var16]) > 0),2);
+
+     %data row before and after True
+     dataBeforeTrue = dataArrayNoTruesWithMore(idxBeforeTrue,:);
+     dataAfterTrue = dataArrayNoTruesWithMore(idxAfterTrue,:);
+
+     %add in a start row for the sake of time calculations
+     firstRow = dataArrayNoTruesWithMore(1,:);
+     %add firstRow to dataAfterTrue table
+     dataAfterTruePlusFirstRow = [firstRow;dataAfterTrue];
+
+     %multiplied Var18 by 30 and placed in Var 19
+     dataAfterTruePlusFirstRow.Var19= dataAfterTruePlusFirstRow.Var18.*30
+
+
+
+  
+ 	
+ 	
      %plots data and adjusts axes
      hold on
-     plot(TIMEEvery30s ,VIMSEvery30s);
-     scatter(TIMEEvery30s ,VIMSEvery30s,'filled', 'b');
+     plot(dataAfterTruePlusFirstRow.Var19,dataAfterTruePlusFirstRow.Var15);
+     scatter(dataAfterTruePlusFirstRow.Var19,dataAfterTruePlusFirstRow.Var15,'filled', 'b');
      ylim([0 4])
      yticks([0 1 2 3 4])
      xticks([30 60 90 120 150 180 210 240 270 300 330 360])
