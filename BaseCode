@@ -41,10 +41,11 @@ for x = 1:length (fileList)
      %created 2 new variables based on ClickCounts and Time
      Var18 = dataArrayNoTrues.Var16; 
      Var19 = dataArrayNoTrues.Var14;
+     Var20 = dataArrayNoTrues.Var14;
 
      %adding the two new variables to the table
-     dataArrayNoTruesWithMore = addvars(dataArrayNoTrues,Var18,Var19);
-
+     dataArrayNoTruesWithMore = addvars(dataArrayNoTrues,Var18,Var19,Var20);
+     
      %index for before and after True
      idxBeforeTrue = all((diff([dataArrayNoTruesWithMore.Var16; 0]) > 0),2);
      idxAfterTrue = all((diff([0; dataArrayNoTruesWithMore.Var16]) > 0),2);
@@ -60,20 +61,22 @@ for x = 1:length (fileList)
 
      %multiplied Var18 by 30 and placed in Var 19
      dataAfterTruePlusFirstRow.Var19= dataAfterTruePlusFirstRow.Var18.*30
-
-
-
-  
- 	
- 	
+     dataAfterTruePlusFirstRow.Var20= dataAfterTruePlusFirstRow.Var19./60
+     
      %plots data and adjusts axes
      hold on
-     plot(dataAfterTruePlusFirstRow.Var19,dataAfterTruePlusFirstRow.Var15);
-     scatter(dataAfterTruePlusFirstRow.Var19,dataAfterTruePlusFirstRow.Var15,'filled', 'b');
+     plot(dataAfterTruePlusFirstRow.Var20,dataAfterTruePlusFirstRow.Var15);
+     scatter(dataAfterTruePlusFirstRow.Var20,dataAfterTruePlusFirstRow.Var15,'filled', 'b');
      ylim([0 4])
      yticks([0 1 2 3 4])
-     xticks([30 60 90 120 150 180 210 240 270 300 330 360])
+     xticks([1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29])
      xlabel("Time (Seconds)")
      ylabel("VIMS rating")
      title("Temporal VIMS rating")
+
+     %Estimate of Area Under Curve calculated
+     AUC = trapz(dataAfterTruePlusFirstRow.Var15);
+     
+     %algorithm's little n (time endured through simulation) 
+     n = max(dataAfterTruePlusFirstRow.Var20);
 end
