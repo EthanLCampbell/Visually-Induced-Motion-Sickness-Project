@@ -80,3 +80,4 @@ for x = 1:length (fileList)
      %algorithm's little n (time endured through simulation) 
      n = max(dataAfterTruePlusFirstRow.Var20);
 end
+
