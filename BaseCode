@@ -28,6 +28,11 @@ for x = 1:length (fileList)
      fileID = fopen(filename,'r');
      dataArray = textscan(fileID,'%s%s%s%s%s%s%s%s%s%s%s%s%s%f%f%f%s','Delimiter',',','HeaderLines',1,'CollectOutput',false);
      fclose(fileID);
+	 
+	 %extract subject # in filename'
+	 underlineLocation = strfind(filename, 'Subject_');
+	 subject = filename(underlineLocation:underlineLocation+8);
+	 %subject = filename(31:39);
 
      %create table from file
      fullTable = table(dataArray{1:end});
@@ -43,9 +48,16 @@ for x = 1:length (fileList)
      Var19 = dataArrayNoTrues.Var14;
      Var20 = dataArrayNoTrues.Var14;
 
-     %adding the two new variables to the table
-     dataArrayNoTruesWithMore = addvars(dataArrayNoTrues,Var18,Var19,Var20);
-     
+	 
+     %make three new variables into one table 
+     PlaceholderTable = table(Var18,Var19,Var20);
+	 
+	 %add new table to old table
+	 dataArrayNoTruesWithMore = [dataArrayNoTrues PlaceholderTable];
+	 %(dataArrayNoTrues,Var18,Var19,Var20)
+	 
+	 
+	 
      %index for before and after True
      idxBeforeTrue = all((diff([dataArrayNoTruesWithMore.Var16; 0]) > 0),2);
      idxAfterTrue = all((diff([0; dataArrayNoTruesWithMore.Var16]) > 0),2);
@@ -63,21 +75,30 @@ for x = 1:length (fileList)
      dataAfterTruePlusFirstRow.Var19= dataAfterTruePlusFirstRow.Var18.*30
      dataAfterTruePlusFirstRow.Var20= dataAfterTruePlusFirstRow.Var19./60
      
+	 %adds/removes new-figure function based on name/number of subject
+	 figure('NumberTitle', 'off','Name', subject); 
+	 
      %plots data and adjusts axes
-     hold on
+	 hold on
      plot(dataAfterTruePlusFirstRow.Var20,dataAfterTruePlusFirstRow.Var15);
      scatter(dataAfterTruePlusFirstRow.Var20,dataAfterTruePlusFirstRow.Var15,'filled', 'b');
-     ylim([0 4])
+	 ylim([0 4])
      yticks([0 1 2 3 4])
-     xticks([1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29])
-     xlabel("Time (Seconds)")
+     xticks([1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60])
+     xlabel("Time (Minutes)")
      ylabel("VIMS rating")
      title("Temporal VIMS rating")
-
-     %Estimate of Area Under Curve calculated
+	 
+     
+	 %Estimate of Area Under Curve calculated
      AUC = trapz(dataAfterTruePlusFirstRow.Var15);
      
      %algorithm's little n (time endured through simulation) 
      n = max(dataAfterTruePlusFirstRow.Var20);
+	 
+	 %algorithm's capital N (maximum time in simulation)
+	 N = 30	 
+	 
+	 SubjectSensitivity = AUC/(n/N);
 end
 
